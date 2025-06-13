@@ -1,4 +1,17 @@
 {
+  "compilerOptions": {
+    "baseUrl": ".",
+    "paths": {
+      "@/*": ["src/*"]
+    },
+    "moduleResolution": "Node",               // ✅ Добавь эту строку
+    "target": "ESNext",                       // ✅ (если отсутствует)
+    "module": "ESNext",                       // ✅
+    "strict": true,                           // ✅ желательно
+    "esModuleInterop": true,                  // ✅
+    "forceConsistentCasingInFileNames": true  // ✅
+  },
+  "include": ["src/**/*"],
   "files": [],
   "references": [
     { "path": "./tsconfig.app.json" },

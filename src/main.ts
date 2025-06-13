@@ -1,5 +1,10 @@
 import { createApp } from 'vue'
-import './style.css'
 import App from './App.vue'
+import { createNaiveUI } from './plugins/naive'
+import { initThemeWatcher } from './app/theme'
 
-createApp(App).mount('#app')
+initThemeWatcher()
+
+const app = createApp(App)
+app.use(createNaiveUI())
+app.mount('#app')
