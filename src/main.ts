@@ -1,7 +1,7 @@
-import { createApp } from 'vue'
-import App from './App.vue'
-import { createNaiveUI } from './plugins/naive'
-import { initThemeWatcher } from './app/theme'
+import {createApp} from 'vue'
+import App from "./App.vue"
+import {createNaiveUI} from './plugins/naive'
+import {initThemeWatcher} from './app/theme'
 
 initThemeWatcher()
 

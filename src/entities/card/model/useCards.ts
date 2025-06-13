@@ -1,10 +1,9 @@
-// src/entities/card/model/useCards.ts
+// useCards.ts
 import { ref, computed } from 'vue'
+import { initialCards } from './cards.data'
 
 export function useCards() {
-    const cards = ref([
-        { id: 1, front: 'Что такое Vue?', back: 'Фреймворк для UI' }
-    ])
+    const cards = ref([...initialCards])
 
     const addCard = (front: string, back: string) => {
         const id = Date.now()

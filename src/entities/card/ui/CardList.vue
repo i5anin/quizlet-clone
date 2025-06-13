@@ -2,10 +2,10 @@
   <n-card title="Карточки" size="medium" segmented>
     <n-form @submit.prevent="handleSubmit">
       <n-form-item label="Вопрос">
-        <n-input v-model:value="front" placeholder="Введите вопрос" />
+        <n-input v-model:value="front" placeholder="Введите вопрос"/>
       </n-form-item>
       <n-form-item label="Ответ">
-        <n-input v-model:value="back" placeholder="Введите ответ" />
+        <n-input v-model:value="back" placeholder="Введите ответ"/>
       </n-form-item>
       <n-form-item>
         <n-button type="primary" attr-type="submit">Добавить</n-button>
@@ -22,15 +22,16 @@
         class="mb-2"
         segmented
     >
-      <n-thing :description="card.back" />
-      <n-button
-          type="error"
-          size="small"
-          @click="removeCard(card.id)"
-          style="margin-top: 8px"
-      >
-        Удалить
-      </n-button>
+      <div class="card-content">
+        <n-thing :description="card.back"/>
+        <n-button
+            type="error"
+            size="small"
+            @click="removeCard(card.id)"
+        >
+          Удалить
+        </n-button>
+      </div>
     </n-card>
 
     <n-divider>Всего: {{ total }}</n-divider>
@@ -38,13 +39,13 @@
 </template>
 
 <script setup lang="ts">
-import { ref } from 'vue'
-import { useCards } from '../model/useCards'
+import {ref} from 'vue'
+import {useCards} from '../model/useCards'
 
 const front = ref('')
 const back = ref('')
 
-const { cards, addCard, removeCard, total } = useCards()
+const {cards, addCard, removeCard, total} = useCards()
 
 const handleSubmit = () => {
   const frontText = front.value.trim()
@@ -62,4 +63,12 @@ const handleSubmit = () => {
 .mb-2 {
   margin-bottom: 12px;
 }
+
+.card-content {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+}
+
 </style>
