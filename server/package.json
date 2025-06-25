@@ -1,0 +1,17 @@
+{
+  "name": "frontend-db",
+  "version": "1.0.0",
+  "main": "parseToSqlite.js",
+  "scripts": {
+    "start": "node parseToSqlite.js",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "private": true,
+  "dependencies": {
+    "sqlite3": "^5.1.7"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "description": ""
+}
