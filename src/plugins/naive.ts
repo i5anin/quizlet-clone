@@ -2,28 +2,28 @@
 import {
     create,
     NConfigProvider,
-    NGlobalStyle,
-    NButton,
     NCard,
-    NInput,
     NForm,
     NFormItem,
-    NDivider,
-    NThing
+    NInput,
+    NButton,
+    NSpace,
+    NList,
+    NListItem
 } from 'naive-ui'
 
 export function createNaiveUI() {
     return create({
         components: [
             NConfigProvider,
-            NGlobalStyle,
-            NButton,
             NCard,
-            NInput,
             NForm,
             NFormItem,
-            NDivider,
-            NThing
+            NInput,
+            NButton,
+            NSpace,
+            NList,
+            NListItem
         ]
     })
 }
