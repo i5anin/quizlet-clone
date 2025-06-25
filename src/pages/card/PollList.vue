@@ -1,24 +1,41 @@
 <template>
-  <section v-if="current" class="poll-viewer">
-    <h2 class="question">{{ current.poll.question }}</h2>
+  <n-card
+      title="Вопрос из Telegram"
+      size="medium"
+      segmented
+      class="poll-card"
+  >
+    <section v-if="current">
+      <h2 class="question">{{ current.poll.question }}</h2>
 
-    <ul class="answers">
-      <li v-for="(answer, i) in current.poll.answers" :key="i">
-        {{ answer.text }}
-      </li>
-    </ul>
+      <n-list bordered class="answers">
+        <n-list-item
+            v-for="(answer, i) in current.poll.answers"
+            :key="i"
+        >
+          <template #prefix>{{ i + 1 }}.</template>
+          <span>{{ answer.text }}</span>
+        </n-list-item>
+      </n-list>
 
-    <footer class="meta">
-      <span>ID: {{ current.id }}</span>
-      <span>Дата: {{ formatDate(current.date) }}</span>
-      <span>Голосов: {{ current.poll.total_voters }}</span>
-    </footer>
+      <div class="meta">
+        <n-space justify="space-between">
+          <span>ID: {{ current.id }}</span>
+          <span>Дата: {{ formatDate(current.date) }}</span>
+          <span>Голосов: {{ current.poll.total_voters }}</span>
+        </n-space>
+      </div>
 
-    <div class="controls">
-      <button @click="prev" :disabled="index === 0">← Назад</button>
-      <button @click="next" :disabled="index === items.length - 1">Вперёд →</button>
-    </div>
-  </section>
+      <n-space justify="space-between" class="controls">
+        <n-button @click="prev" :disabled="index === 0" type="default">
+          ← Назад
+        </n-button>
+        <n-button @click="next" :disabled="index === items.length - 1" type="primary">
+          Вперёд →
+        </n-button>
+      </n-space>
+    </section>
+  </n-card>
 </template>
 
 <script setup lang="ts">
@@ -27,6 +44,7 @@ import restored_data from '../../../server/restored_data.json'
 
 interface PollAnswer {
   text: string
+  correct?: boolean
 }
 
 interface Poll {
@@ -64,38 +82,8 @@ function formatDate(raw: string): string {
 }
 </script>
 
-
-<style scoped>
-.poll-viewer {
-  border: 1px solid #ccc;
-  border-radius: 6px;
-  padding: 1.2rem;
-  max-width: 600px;
-  margin: 2rem auto;
-  background: #fdfdfd;
-}
-
-.question {
-  font-size: 1.2rem;
-  margin-bottom: 0.8rem;
-}
-
-.answers {
-  padding-left: 1.2rem;
-  list-style: disc;
-  margin-bottom: 1rem;
-}
-
-.meta {
-  font-size: 0.85rem;
-  color: #666;
-  display: flex;
-  justify-content: space-between;
-  margin-bottom: 1rem;
-}
-
-.controls {
-  display: flex;
-  justify-content: space-between;
+<style>
+.n-list .n-list-item .n-list-item__prefix {
+  min-width: 1em;
 }
 </style>
