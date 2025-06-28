@@ -1,4 +1,3 @@
-// src/plugins/naive.ts
 import {
     create,
     NConfigProvider,
@@ -15,7 +14,8 @@ import {
     NDivider,
     NResult,
     NGrid,
-    NGi
+    NGi,
+    NAlert
 } from 'naive-ui'
 
 export function createNaiveUI() {
@@ -35,7 +35,8 @@ export function createNaiveUI() {
             NDivider,
             NResult,
             NGrid,
-            NGi
+            NGi,
+            NAlert
         ]
     })
 }

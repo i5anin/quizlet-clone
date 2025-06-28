@@ -20,7 +20,15 @@
         <n-divider v-if="selectedAnswerIndex !== null" />
 
         <n-space v-if="selectedAnswerIndex !== null" vertical size="small">
-          <n-text v-if="current.poll.explanation">
+          <n-alert
+              v-if="!hasCorrectAnswer && !hasExplanation"
+              type="warning"
+              title="Обратите внимание"
+          >
+            В этом вопросе нет отмеченного правильного ответа и отсутствует объяснение.
+          </n-alert>
+
+          <n-text v-if="hasExplanation">
             <strong>Объяснение:</strong> {{ current.poll.explanation }}
           </n-text>
 
@@ -72,26 +80,29 @@ interface Message {
   poll: Poll
 }
 
-// роутинг
 const route = useRoute()
 const router = useRouter()
 
-// id из параметров маршрута
 const paramId = route.params.id ? Number(route.params.id) : null
 
-// список карточек с опросами
 const items = ref<Message[]>(restored_data.messages.filter((m: any) => m.poll))
 
-// вычисляем начальный индекс по id, если есть
 const index = ref(0)
 if (paramId !== null) {
   const idx = items.value.findIndex(m => m.id === paramId)
   if (idx !== -1) index.value = idx
 }
 
-// текущая карточка
 const current = computed(() => items.value[index.value] || null)
 const selectedAnswerIndex = ref<number | null>(null)
+
+const hasCorrectAnswer = computed(() =>
+    current.value?.poll.answers.some((a) => a.correct)
+)
+
+const hasExplanation = computed(() =>
+    Boolean(current.value?.poll.explanation?.trim())
+)
 
 function next() {
   if (index.value < items.value.length - 1) {
