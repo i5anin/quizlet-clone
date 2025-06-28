@@ -25,15 +25,9 @@
           </n-text>
 
           <n-grid :cols="3" responsive="screen">
-            <n-gi>
-              <n-text depth="3">ID: {{ current.id }}</n-text>
-            </n-gi>
-            <n-gi>
-              <n-text depth="3">Дата: {{ formatDate(current.date) }}</n-text>
-            </n-gi>
-            <n-gi>
-              <n-text depth="3">Голосов: {{ current.poll.total_voters }}</n-text>
-            </n-gi>
+            <n-gi><n-text depth="3">ID: {{ current.id }}</n-text></n-gi>
+            <n-gi><n-text depth="3">Дата: {{ formatDate(current.date) }}</n-text></n-gi>
+            <n-gi><n-text depth="3">Голосов: {{ current.poll.total_voters }}</n-text></n-gi>
           </n-grid>
         </n-space>
 
@@ -45,11 +39,19 @@
         </n-space>
       </n-thing>
     </section>
+
+    <n-result
+        v-else
+        status="404"
+        title="Вопрос не найден"
+        description="Проверьте ID в URL"
+    />
   </n-card>
 </template>
 
 <script setup lang="ts">
 import { ref, computed } from 'vue'
+import { useRoute, useRouter } from 'vue-router'
 import restored_data from '../../../server/restored_data.json'
 
 interface PollAnswer {
@@ -70,16 +72,32 @@ interface Message {
   poll: Poll
 }
 
-const items = ref<Message[]>(restored_data.messages.filter((m: any) => m.poll))
-const index = ref(0)
-const selectedAnswerIndex = ref<number | null>(null)
+// роутинг
+const route = useRoute()
+const router = useRouter()
 
+// id из параметров маршрута
+const paramId = route.params.id ? Number(route.params.id) : null
+
+// список карточек с опросами
+const items = ref<Message[]>(restored_data.messages.filter((m: any) => m.poll))
+
+// вычисляем начальный индекс по id, если есть
+const index = ref(0)
+if (paramId !== null) {
+  const idx = items.value.findIndex(m => m.id === paramId)
+  if (idx !== -1) index.value = idx
+}
+
+// текущая карточка
 const current = computed(() => items.value[index.value] || null)
+const selectedAnswerIndex = ref<number | null>(null)
 
 function next() {
   if (index.value < items.value.length - 1) {
     index.value++
     selectedAnswerIndex.value = null
+    router.replace({ name: 'card-by-id', params: { id: current.value.id } })
   }
 }
 
@@ -87,6 +105,7 @@ function prev() {
   if (index.value > 0) {
     index.value--
     selectedAnswerIndex.value = null
+    router.replace({ name: 'card-by-id', params: { id: current.value.id } })
   }
 }
 
@@ -119,20 +138,16 @@ function formatDate(raw: string): string {
   gap: 8px;
   align-items: center;
 }
-
 .answer-index {
   min-width: 1.5em;
   text-align: right;
 }
-
 .n-list-item.correct {
   border-left: 4px solid #52c41a;
 }
-
 .n-list-item.incorrect {
   border-left: 4px solid #ff4d4f;
 }
-
 .n-list-item:hover {
   cursor: pointer;
 }

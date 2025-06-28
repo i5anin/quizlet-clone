@@ -9,7 +9,13 @@ import {
     NButton,
     NSpace,
     NList,
-    NListItem
+    NListItem,
+    NThing,
+    NText,
+    NDivider,
+    NResult,
+    NGrid,
+    NGi
 } from 'naive-ui'
 
 export function createNaiveUI() {
@@ -23,7 +29,13 @@ export function createNaiveUI() {
             NButton,
             NSpace,
             NList,
-            NListItem
+            NListItem,
+            NThing,
+            NText,
+            NDivider,
+            NResult,
+            NGrid,
+            NGi
         ]
     })
 }
