@@ -5,7 +5,8 @@ import PollList from "@/pages/card/PollList.vue"
 
 const routes = [
     {path: '/cards', component: CardPage},
-    {path: '/pollist', component: PollList}
+    {path: '/pollist', component: PollList},
+    {path: '/', component: PollList}
 ]
 
 export const router = createRouter({

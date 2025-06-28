@@ -1,10 +1,5 @@
 <template>
-  <n-card
-      title="Вопрос из Telegram"
-      size="medium"
-      segmented
-      class="poll-card"
-  >
+  <n-card title="Вопрос из Telegram" size="medium" segmented class="poll-card">
     <section v-if="current">
       <h2 class="question">{{ current.poll.question }}</h2>
 
@@ -12,14 +7,20 @@
         <n-list-item
             v-for="(answer, i) in current.poll.answers"
             :key="i"
+            @click="selectAnswer(i)"
+            clickable
+            :style="getStyle(i)"
         >
           <template #prefix>{{ i + 1 }}.</template>
           <span>{{ answer.text }}</span>
         </n-list-item>
       </n-list>
 
-      <div class="meta">
+      <div class="meta" v-if="selectedAnswerIndex !== null">
         <n-space justify="space-between">
+          <div v-if="current.poll.explanation">
+            <strong>Объяснение:</strong> {{ current.poll.explanation }}
+          </div>
           <span>ID: {{ current.id }}</span>
           <span>Дата: {{ formatDate(current.date) }}</span>
           <span>Голосов: {{ current.poll.total_voters }}</span>
@@ -27,16 +28,13 @@
       </div>
 
       <n-space justify="space-between" class="controls">
-        <n-button @click="prev" :disabled="index === 0" type="default">
-          ← Назад
-        </n-button>
-        <n-button @click="next" :disabled="index === items.length - 1" type="primary">
-          Вперёд →
-        </n-button>
+        <n-button @click="prev" :disabled="index === 0" type="default">← Назад</n-button>
+        <n-button @click="next" :disabled="index === items.length - 1" type="primary">Вперёд →</n-button>
       </n-space>
     </section>
   </n-card>
 </template>
+
 
 <script setup lang="ts">
 import { ref, computed } from 'vue'
@@ -51,6 +49,7 @@ interface Poll {
   question: string
   total_voters: number
   answers: PollAnswer[]
+  explanation?: string
 }
 
 interface Message {
@@ -59,19 +58,52 @@ interface Message {
   poll: Poll
 }
 
-const items = ref<Message[]>(
-    restored_data.messages.filter((m: any) => m.poll)
-)
-
+const items = ref<Message[]>(restored_data.messages.filter((m: any) => m.poll))
 const index = ref(0)
 const current = computed(() => items.value[index.value] || null)
+const selectedAnswerIndex = ref<number | null>(null)
 
 function next() {
-  if (index.value < items.value.length - 1) index.value++
+  if (index.value < items.value.length - 1) {
+    index.value++
+    selectedAnswerIndex.value = null
+  }
 }
 
+function getStyle(i: number) {
+  if (selectedAnswerIndex.value === null) return ''
+  const answer = current.value?.poll.answers[i]
+  if (!answer) return ''
+  if (answer.correct) {
+    return 'border-left: 4px solid #52c41a;'
+  }
+  if (selectedAnswerIndex.value === i) {
+    return 'border-left: 4px solid #ff4d4f;'
+  }
+  return ''
+}
+
+
 function prev() {
-  if (index.value > 0) index.value--
+  if (index.value > 0) {
+    index.value--
+    selectedAnswerIndex.value = null
+  }
+}
+
+function selectAnswer(i: number) {
+  if (selectedAnswerIndex.value === null) {
+    selectedAnswerIndex.value = i
+  }
+}
+
+function getAnswerClass(i: number) {
+  if (selectedAnswerIndex.value === null) return ''
+  const answer = current.value?.poll.answers[i]
+  if (!answer) return ''
+  if (answer.correct) return 'correct'
+  if (selectedAnswerIndex.value === i) return 'incorrect'
+  return ''
 }
 
 function formatDate(raw: string): string {
@@ -82,8 +114,25 @@ function formatDate(raw: string): string {
 }
 </script>
 
+
 <style>
 .n-list .n-list-item .n-list-item__prefix {
   min-width: 1em;
 }
+::v-deep(.n-list-item.correct::before) {
+  content: '✔ ';
+  color: #52c41a;
+  font-weight: bold;
+}
+::v-deep(.n-list-item.incorrect::before) {
+  content: '✖ ';
+  color: #ff4d4f;
+  font-weight: bold;
+}
+
+
+.n-list .n-list-item:hover {
+  cursor: pointer;
+}
+
 </style>
