@@ -1,40 +1,52 @@
 <template>
   <n-card title="Вопрос из Telegram" size="medium" segmented class="poll-card">
     <section v-if="current">
-      <h2 class="question">{{ current.poll.question }}</h2>
+      <n-thing :title="current.poll.question" class="question-block">
+        <n-list bordered>
+          <n-list-item
+              v-for="(answer, i) in current.poll.answers"
+              :key="i"
+              clickable
+              :class="getAnswerClass(i)"
+              @click="selectAnswer(i)"
+          >
+            <n-space align="center" class="answer-item">
+              <n-text strong class="answer-index">{{ i + 1 }}.</n-text>
+              <n-text class="answer-text">{{ answer.text }}</n-text>
+            </n-space>
+          </n-list-item>
+        </n-list>
 
-      <n-list bordered class="answers">
-        <n-list-item
-            v-for="(answer, i) in current.poll.answers"
-            :key="i"
-            @click="selectAnswer(i)"
-            clickable
-            :style="getStyle(i)"
-        >
-          <template #prefix>{{ i + 1 }}.</template>
-          <span>{{ answer.text }}</span>
-        </n-list-item>
-      </n-list>
+        <n-divider v-if="selectedAnswerIndex !== null" />
 
-      <div class="meta" v-if="selectedAnswerIndex !== null">
-        <n-space justify="space-between">
-          <div v-if="current.poll.explanation">
+        <n-space v-if="selectedAnswerIndex !== null" vertical size="small">
+          <n-text v-if="current.poll.explanation">
             <strong>Объяснение:</strong> {{ current.poll.explanation }}
-          </div>
-          <span>ID: {{ current.id }}</span>
-          <span>Дата: {{ formatDate(current.date) }}</span>
-          <span>Голосов: {{ current.poll.total_voters }}</span>
-        </n-space>
-      </div>
+          </n-text>
 
-      <n-space justify="space-between" class="controls">
-        <n-button @click="prev" :disabled="index === 0" type="default">← Назад</n-button>
-        <n-button @click="next" :disabled="index === items.length - 1" type="primary">Вперёд →</n-button>
-      </n-space>
+          <n-grid :cols="3" responsive="screen">
+            <n-gi>
+              <n-text depth="3">ID: {{ current.id }}</n-text>
+            </n-gi>
+            <n-gi>
+              <n-text depth="3">Дата: {{ formatDate(current.date) }}</n-text>
+            </n-gi>
+            <n-gi>
+              <n-text depth="3">Голосов: {{ current.poll.total_voters }}</n-text>
+            </n-gi>
+          </n-grid>
+        </n-space>
+
+        <n-divider />
+
+        <n-space justify="space-between">
+          <n-button @click="prev" :disabled="index === 0" type="default">← Назад</n-button>
+          <n-button @click="next" :disabled="index === items.length - 1" type="primary">Вперёд →</n-button>
+        </n-space>
+      </n-thing>
     </section>
   </n-card>
 </template>
-
 
 <script setup lang="ts">
 import { ref, computed } from 'vue'
@@ -60,8 +72,9 @@ interface Message {
 
 const items = ref<Message[]>(restored_data.messages.filter((m: any) => m.poll))
 const index = ref(0)
-const current = computed(() => items.value[index.value] || null)
 const selectedAnswerIndex = ref<number | null>(null)
+
+const current = computed(() => items.value[index.value] || null)
 
 function next() {
   if (index.value < items.value.length - 1) {
@@ -69,20 +82,6 @@ function next() {
     selectedAnswerIndex.value = null
   }
 }
-
-function getStyle(i: number) {
-  if (selectedAnswerIndex.value === null) return ''
-  const answer = current.value?.poll.answers[i]
-  if (!answer) return ''
-  if (answer.correct) {
-    return 'border-left: 4px solid #52c41a;'
-  }
-  if (selectedAnswerIndex.value === i) {
-    return 'border-left: 4px solid #ff4d4f;'
-  }
-  return ''
-}
-
 
 function prev() {
   if (index.value > 0) {
@@ -97,7 +96,7 @@ function selectAnswer(i: number) {
   }
 }
 
-function getAnswerClass(i: number) {
+function getAnswerClass(i: number): string {
   if (selectedAnswerIndex.value === null) return ''
   const answer = current.value?.poll.answers[i]
   if (!answer) return ''
@@ -114,25 +113,27 @@ function formatDate(raw: string): string {
 }
 </script>
 
-
-<style>
-.n-list .n-list-item .n-list-item__prefix {
-  min-width: 1em;
-}
-::v-deep(.n-list-item.correct::before) {
-  content: '✔ ';
-  color: #52c41a;
-  font-weight: bold;
-}
-::v-deep(.n-list-item.incorrect::before) {
-  content: '✖ ';
-  color: #ff4d4f;
-  font-weight: bold;
+<style scoped>
+.answer-item {
+  display: flex;
+  gap: 8px;
+  align-items: center;
 }
 
+.answer-index {
+  min-width: 1.5em;
+  text-align: right;
+}
 
-.n-list .n-list-item:hover {
+.n-list-item.correct {
+  border-left: 4px solid #52c41a;
+}
+
+.n-list-item.incorrect {
+  border-left: 4px solid #ff4d4f;
+}
+
+.n-list-item:hover {
   cursor: pointer;
 }
-
 </style>
